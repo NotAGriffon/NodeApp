@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="container">
+        <h1>Game List</h1>
+
+        <div id="search-sort-controls">
+            <input type="text" id="search-input" placeholder="Search games...">
+            <button id="search-button">Search</button>
+            <select id="sort-select">
+                <option value="name">Sort by Name</option>
+                <option value="studio">Sort by Studio</option>
+            </select>
+            <button id="sort-button">Sort</button>
+        </div>
+        <script>
+            document.getElementById('search-button').addEventListener('click', function() {
+                var searchQuery = document.getElementById('search-input').value;
+
+                fetchGames("/getdata?search=" + searchQuery);
+            });
+
+            document.getElementById('sort-button').addEventListener('click', function() {
+                var sortCriteria = document.getElementById('sort-select').value;
+                fetchGames("/getdata?sort=" + sortCriteria);
+            });
+
+            function fetchGames(url) {
+                fetch(url).then(function(games){
+                    games.json().then(function(theGames){
+                        console.log(theGames);
+                        var container = document.getElementById("container");
+
+                        container.querySelectorAll('p, br').forEach(e => e.remove());
+                        for(let game of theGames.games) {
+                            var gameElement = document.createElement("p");
+                            gameElement.innerHTML = game.gamename;
+                            gameElement.innerHTML += " by " + game.gamestudio + " &nbsp &nbsp &nbsp ";
+                            container.appendChild(gameElement);
+                        
+                            var deleteButton = document.createElement('button');
+                            deleteButton.innerText = "Delete Game";
+                            deleteButton.addEventListener("click", function(){
+                                console.log("Deleted Game");
+
+                                location.reload();
+                                fetch("/deletegame", {
+                                    method:"POST",
+                                    headers:{
+                                        "Content-Type":"application/json"
+                                    },
+                                    body:JSON.stringify({game:game})
+                                });
+                            })
+
+                            gameElement.appendChild(deleteButton);
+
+                            var updateButton = document.createElement('button');
+                            updateButton.innerText = "Update Game";
+                            updateButton.addEventListener("click", function(){
+                                window.location.replace("update?id=" + game._id + "&name=" + game.gamename);
+                            })
+
+                            gameElement.appendChild(updateButton);
+                        }
+                    })
+                })
+            }
+
+            fetchGames("/getdata");
+        </script>
+    </div>
+</body>
+</html>

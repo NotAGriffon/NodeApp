@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game Data Query Example</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .game { margin-bottom: 10px; }
+    </style>
+</head>
+<body>
+    <h1>Search and Sort Game Data</h1>
+    <input type="text" id="searchQuery" placeholder="Search for games...">
+    <button onclick="searchGames()">Search</button>
+    <button onclick="sortGames()">Sort Alphabetically</button>
+    <div id="gamesList"></div>
+
+    <script>
+        function fetchGames(url) {
+            fetch(url)
+                .then(response => response.json())
+                .then(data => {
+                    displayGames(data.games);
+                })
+                .catch(error => console.error('Error:', error));
+        }
+
+        function searchGames() {
+            var query = document.getElementById('searchQuery').value;
+            var url = `/getdata?search=${encodeURIComponent(query)}`;
+            fetchGames(url);
+        }
+
+        function displayGames(games) {
+            var gamesList = document.getElementById('gamesList');
+            gamesList.innerHTML = '';
+            games.forEach(game => {
+            var gameDiv = document.createElement('div');
+            gameDiv.className = 'game';
+            gameDiv.textContent = game.gamename;
+            gamesList.appendChild(gameDiv);
+            });
+        }
+
+        function sortGames() {
+            var url = '/getdata?sort=1';
+            fetchGames(url);
+        }
+
+        function displayGames(games) {
+            var gamesList = document.getElementById('gamesList');
+            gamesList.innerHTML = '';
+            games.forEach(game => {
+                var gameDiv = document.createElement('div');
+                gameDiv.className = 'game';
+                gameDiv.textContent = game.gamename;
+                gamesList.appendChild(gameDiv);
+            });
+        }
+
+        fetchGames('/getdata');
+    </script>
+</body>
+</html>
