@@ -84,7 +84,6 @@ router.post("/unity", function(req, res){
 
 router.get("/getUnity", function(req, res){
     console.log(dataToSend);
-    //res.json(dataToSend);
 
     UnityModel.find({}).then(function(playerdata){
         console.log(playerdata)
