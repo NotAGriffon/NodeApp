@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div id="container">
+        <h1>Player List</h1>
+
+        <div id="search-sort-controls">
+            <input type="text" id="search-input" placeholder="Search Players...">
+            <button id="search-button">Search</button>
+            <select id="sort-select">
+                <option value="name">Sort by Player</option>
+            </select>
+            <button id="sort-button">Sort</button>
+        </div>
+        <script>
+            document.getElementById('search-button').addEventListener('click', function() {
+                var searchQuery = document.getElementById('search-input').value;
+
+                fetchPlayers("/getPlayerData?search=" + searchQuery);
+            });
+
+            document.getElementById('sort-button').addEventListener('click', function() {
+                var sortCriteria = document.getElementById('sort-select').value;
+                
+                fetchPlayers("/getPlayerData?sort=" + sortCriteria);
+            });
+
+            function fetchPlayers(url) {
+                fetch(url).then(function(players){
+                    players.json().then(function(thePlayers){
+                        console.log(thePlayers);
+                        var container = document.getElementById("container");
+
+                        container.querySelectorAll('p, br').forEach(e => e.remove());
+                        for(let player of thePlayers.players) {
+                            var playerElement = document.createElement("p");
+                            playerElement.innerHTML = "Screen Name: " + player.screenName + " &nbsp &nbsp &nbsp ";
+                            playerElement.innerHTML += " Player Score: " + player.score + " &nbsp &nbsp &nbsp ";
+                            container.appendChild(playerElement);
+
+                            var updateScoreButton = document.createElement('button');
+                            updateScoreButton.innerText = "Update Score";
+                            updateScoreButton.addEventListener("click", function(){
+                                window.location.replace("update?id=" + player._id + "&score=" + player.score);
+                            })
+
+                            playerElement.appendChild(updateScoreButton);
+                        }
+                    })
+                })
+            }
+
+            fetchPlayers("/getPlayerData");
+        </script>
+    </div>
+</body>
+</html>

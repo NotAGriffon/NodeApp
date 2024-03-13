@@ -109,4 +109,23 @@ router.post("/deleteUnity", function(req, res){
     UnityModel.findByIdAndDelete(req.body._id).exec();
 })
 
+// FINAL WEBSITE DISPLAY
+router.get("/getPlayerData", function(req,res){
+    UnityModel.find({}).then(function(players){
+        res.json({players});
+    }).catch(function(err){
+        console.error(err);
+        res.status(500).json({ error: "Internal Server Error"})
+    })
+});
+
+// Update
+router.post("/updatePlayer", function(req, res)
+{
+    console.log(req.body);
+    UnityModel.findByIdAndUpdate(req.body.id,{score:req.body.score}).then(function(){
+        res.redirect("players.html");
+    });
+})
+
 module.exports = router;
